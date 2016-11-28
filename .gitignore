@@ -12,7 +12,7 @@ src_managed/
 project/boot/
 project/plugins/project/
 
-# Scala-IDE specific
-*.idea/*.iws
-*.idea/worksheet.xml
-*.idea/tasks.xml
+
+
+
+
