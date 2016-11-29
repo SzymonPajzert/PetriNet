@@ -21,6 +21,10 @@ case class Transition(name:String)(input: Place*)(output: Place*) {
   }
 }
 
+object PetriNet {
+  def empty = new PetriNet(Map(), Map())
+}
+
 class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition]) extends Function[State, Traversable[State]] {
 
   def getPlace(name: String) = places get name
