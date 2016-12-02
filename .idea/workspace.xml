@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5e9d36d7-ff3e-4996-8a33-c0a56b9ce879" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/snoopy/model/Edge.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/snoopy/model/ParseOutput.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/snoopy/parser/SnoopyBuilder.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/snoopy/model/Node.scala" afterPath="$PROJECT_DIR$/src/main/scala/snoopy/model/Node.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/snoopy/parser/SnoopyParser.scala" afterPath="$PROJECT_DIR$/src/main/scala/snoopy/parser/SnoopyParser.scala" />
-    </list>
+    <list default="true" id="5e9d36d7-ff3e-4996-8a33-c0a56b9ce879" name="Default" comment="" />
     <ignored path="PetriNet.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
