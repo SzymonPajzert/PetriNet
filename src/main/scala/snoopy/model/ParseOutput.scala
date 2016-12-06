@@ -1,7 +1,5 @@
 package snoopy.model
 
-import java.io.StringWriter
-
 import scala.xml.{Node => XmlNode}
 
 sealed trait ParseOutput[+T] {
@@ -9,7 +7,7 @@ sealed trait ParseOutput[+T] {
   def get:T
 }
 object ParseOutput {
-  case class Success[T](result: T) extends ParseOutput[T] {
+  case class Success[+T](result: T) extends ParseOutput[T] {
     def failed = false
 
     def get: T = result
@@ -18,6 +16,8 @@ object ParseOutput {
     def failed = true
     def get = ??? // TODO find nice exception to be thrown
   }
+
+  // def apply[T](node: XmlNode)(expression: => ParseOutput[T]): ParseOutput[T] = expression
 
   def apply[T](node: XmlNode)(expression: => T): ParseOutput[T] = try {
     Success(expression)

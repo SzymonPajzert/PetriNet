@@ -12,4 +12,6 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0-M2"
 )
 
+scalacOptions += "-deprecation"
+
 logBuffered in Test := false

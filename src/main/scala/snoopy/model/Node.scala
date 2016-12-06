@@ -1,15 +1,10 @@
 package snoopy.model
 
-sealed trait Node {
-  def nodeType: String
-  def id: Int
-  def name: String
+private[snoopy] sealed class Node(val id: Int, val name: String) {
+  def place(capacity: Int) = Place(id, name, capacity)
+  def transition() = Transition(id, name)
 }
 
-case class Place(id: Int, name: String, capacity: Int) extends Node {
-  override def nodeType: String = "Place"
-}
+case class Place(override val id: Int, override val name: String, capacity: Int) extends Node(id, name)
 
-case class Transition(id: Int, name: String) extends Node {
-  override def nodeType: String = "Transition"
-}
+case class Transition(override val id: Int, override val name: String) extends Node(id, name)

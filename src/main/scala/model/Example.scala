@@ -1,5 +1,6 @@
 package model
 
+// TODO move to tests.
 object Example extends App {
 
   private def present1(): Unit = {
@@ -7,10 +8,8 @@ object Example extends App {
     val b = Place("bbb", 3)
     val c = Place("ccc", 2)
 
-    val first = Transition("first")(a, b)(c)
+    val first = Transition.create("first")(a, b)(c)
   }
 
-  override def main(args: Array[String]): Unit = {
-    present1()
-  }
+  present1()
 }

@@ -7,7 +7,20 @@ case class Place(name:String, max: Int) extends Ordered[Place]{
   }
 }
 
-case class Transition(name:String)(input: Place*)(output: Place*) {
+object Transition {
+  def apply(name: String) = new Transition(name, Iterable(), Iterable())
+
+  def create(name: String)(input: Place*)(output: Place*): Transition = new Transition(name, input, output)
+
+  def unapply(arg: Transition): Option[String] = Some(arg.name)
+}
+
+// TODO move to separate file
+class Transition private (val name:String, val input: Iterable[Place], val output: Iterable[Place]) {
+  def addInput(additionalInput: Place*):Transition = new Transition(name, input ++ additionalInput, output)
+
+  def addOutput(additionalOutput: Place*):Transition = new Transition(name, input, output ++ additionalOutput)
+
   def isActive(state: State): Boolean = state containsPlaces input
 
   def availableStates(state: State) : Traversable[State] = {
@@ -23,6 +36,10 @@ case class Transition(name:String)(input: Place*)(output: Place*) {
 
 object PetriNet {
   def empty = new PetriNet(Map(), Map())
+
+  def apply(places: Iterable[Place], transition: Iterable[Transition]): PetriNet = {
+    ???
+  }
 }
 
 class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition]) extends Function[State, Traversable[State]] {

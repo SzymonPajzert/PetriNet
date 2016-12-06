@@ -5,7 +5,8 @@ import scala.collection.immutable.{TreeMap, SortedMap}
 object State {
   def empty = new State(new TreeMap())
 
-  def apply(elems: (Place, Int)*) = new State(SortedMap(elems: _*))
+  def apply(elems: (Place, Int)*):State = new State(SortedMap(elems: _*))
+
 }
 
 
