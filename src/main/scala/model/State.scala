@@ -6,16 +6,7 @@ object State {
   def empty = new State(new TreeMap())
 
   def apply(elems: (Place, Int)*):State = new State(SortedMap(elems: _*))
-
 }
-
-
-/* TODO
- *
- * Instantiazation of Travesable() for Traversable[State] should create collection supporting const append
- * It can be done with override of class GenericCompanion[+CC[X] <: GenTraversable[X]] or
- * newBuilder[A].result()
- */
 
 class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunction[Place, Int] {
 
@@ -23,8 +14,18 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
 
   def values : Iterable[Int] = placesValues.values
 
-  def containsPlaces(subPlaces: Traversable[Place]): Boolean =
-    (subPlaces foldLeft true){ case (prev, cur) => prev && (placesValues contains cur) }
+  def placesSatisfying(predicate: (Place, Int) => Boolean):Set[Place] = (for((place, value) <- placesValues) yield {
+    if(predicate(place, value)) Some(place) else None
+  }).flatten.toSet
+
+  val activePlaces: Set[Place] = placesSatisfying { (place, value) =>  value > 0 }
+  val freePlaces: Set[Place] = placesSatisfying { (place, value) =>   value + 1 < place.max }
+
+  def setContains(places: Set[Place])(subPlaces: Traversable[Place]) =
+    (for(place <- subPlaces) yield places contains place) reduce (_ && _)
+
+  def isActive: Traversable[Place] => Boolean = setContains(activePlaces)
+  def isFree: Traversable[Place] => Boolean = setContains(freePlaces)
 
   def decrementPlace(place: Place, value: Int = 1): Option[State] = {
     val oldValue = placesValues get place match {
@@ -34,15 +35,18 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
     val newValue = oldValue - value
 
     if(newValue < 0) None else
-      Some(new State(if (newValue > 0) placesValues + (place -> newValue) else placesValues - place))
+      Some(new State(placesValues + (place -> newValue)))
   }
 
   def incrementPlace(place: Place, value: Int = 1): Option[State] = {
-    val newState = placesValues get place match {
-      case Some(n) => new State(placesValues + (place -> (n + value)))
-      case None => new State(placesValues + (place -> value))
+    val oldValue = placesValues get place match {
+      case Some(v) => v
+      case None => 0
     }
-    Some(newState)
+    val newValue = oldValue + value
+
+    if(newValue >= place.max) None else
+      Some(new State(placesValues + (place -> newValue)))
   }
 
   private def accumulate(map: (State, Place) => Option[State])(places: Traversable[Place]): Option[State] = {
@@ -67,5 +71,16 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
   override def toString = {
     val namePairs = for ((place, value) <- placesValues) yield s"${place.name}=$value"
     "State(" + (namePairs mkString ", ") + ")"
+  }
+
+  override def hashCode() = {
+    placesValues.hashCode()
+  }
+
+  override def equals(that: Any) = {
+    that match {
+      case state: State => this.placesValues equals state.placesValues
+      case _ => false
+    }
   }
 }

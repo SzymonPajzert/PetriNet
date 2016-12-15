@@ -1,48 +1,24 @@
 package model
 
-case class Place(name:String, max: Int) extends Ordered[Place]{
-  override def compare(that: Place): Int = this.name compare that.name match {
-    case 0 => this.max compare that.max
-    case v => v
-  }
-}
-
-object Transition {
-  def apply(name: String) = new Transition(name, Iterable(), Iterable())
-
-  def create(name: String)(input: Place*)(output: Place*): Transition = new Transition(name, input, output)
-
-  def unapply(arg: Transition): Option[String] = Some(arg.name)
-}
-
-// TODO move to separate file
-class Transition private (val name:String, val input: Iterable[Place], val output: Iterable[Place]) {
-  def addInput(additionalInput: Place*):Transition = new Transition(name, input ++ additionalInput, output)
-
-  def addOutput(additionalOutput: Place*):Transition = new Transition(name, input, output ++ additionalOutput)
-
-  def isActive(state: State): Boolean = state containsPlaces input
-
-  def availableStates(state: State) : Traversable[State] = {
-    state decrementPlaces input match {
-      case None => Traversable()
-      case Some(decreasedState) => for {
-        outputPlace <- output
-        increasedState <- decreasedState incrementPlace outputPlace
-      } yield increasedState
-    }
-  }
-}
-
 object PetriNet {
   def empty = new PetriNet(Map(), Map())
 
-  def apply(places: Iterable[Place], transition: Iterable[Transition]): PetriNet = {
-    ???
+  def apply(places: Iterable[Place], transitions: Iterable[Transition]): PetriNet = {
+    val placeSet = places.toSet
+
+    for(transition <- transitions) {
+      for(place <- transition.input ++ transition.output) {
+        assert(placeSet.contains(place))
+        // TODO find nice exception to be thrown
+        // TODO find where place exceptions in scala
+      }
+    }
+
+    new PetriNet(places.map(x => (x.name, x)).toMap, transitions.map(x => (x.name, x)).toMap)
   }
 }
 
-class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition]) extends Function[State, Traversable[State]] {
+class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition]) extends Function[State, Iterable[State]] {
 
   def getPlace(name: String) = places get name
 
@@ -60,7 +36,7 @@ class PetriNet private (val places: Map[String, Place], val transitions: Map[Str
 
   def activeTransitions(state: State) = transitions.values filter { case x => x.isActive(state) }
 
-  override def apply(state: State): Traversable[State] = {
+  override def apply(state: State): Iterable[State] = {
     activeTransitions(state) flatMap { case transition => transition availableStates state }
   }
 }
