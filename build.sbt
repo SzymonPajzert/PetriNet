@@ -20,4 +20,6 @@ scalacOptions ++= Seq(
   "-Ypartial-unification"
 )
 
+wartremoverWarnings ++= Warts.all
+
 logBuffered in Test := false
