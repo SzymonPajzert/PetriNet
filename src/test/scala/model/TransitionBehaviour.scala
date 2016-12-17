@@ -29,7 +29,6 @@ trait TransitionBehaviour { this: FlatSpec =>
 
     it should "yield non empty results" in {
       for(state <- states) {
-        println(state)
         assert((transition availableStates state).nonEmpty)
       }
     }

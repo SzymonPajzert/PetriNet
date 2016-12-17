@@ -9,3 +9,32 @@
   * https://github.com/matiasvinjevoll/cpnscalasimulator
   * https://github.com/Primetalk/SynapseGrid
   * http://ceur-ws.org/Vol-851/paper16.pdf
+
+
+## How to use
+
+Add the plugin in project/plugins.sbt:
+```scala
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
+```
+
+Run the tests with enabled coverage:
+```
+$ sbt clean coverage test
+```
+or if you have integration tests as well
+```
+$ sbt clean coverage it:test
+```
+
+To enable coverage directly in your build, use:
+```
+coverageEnabled := true
+```
+
+To generate the coverage reports run
+```
+$ sbt coverageReport
+```
+
+Coverage reports will be in `target/scoverage-report`. There are HTML and XML reports.

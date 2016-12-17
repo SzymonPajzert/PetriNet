@@ -4,6 +4,9 @@ version := "1.0"
 
 scalaVersion := "2.12.0"
 
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint:_")
+scalacOptions in (Compile, doc) ++= Seq("-unchecked", "-deprecation", "-diagrams", "-implicits", "-skip-packages", "samples")
+
 libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.0.1",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
@@ -13,13 +16,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0-M2"
 )
 
-scalacOptions ++= Seq(
-  "-deprecation",
-  "-unchecked",
-  "-Xlint:_",
-  "-Ypartial-unification"
-)
-
-wartremoverWarnings ++= Warts.all
+// Consider turning it off for Option2Iterable
+wartremoverWarnings in (Compile, compile) ++= Warts.allBut(Wart.Option2Iterable, Wart.NonUnitStatements)
+coverageEnabled := true
 
 logBuffered in Test := false

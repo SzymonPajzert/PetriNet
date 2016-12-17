@@ -23,14 +23,12 @@ class SnoopyParser(val root: XmlNode,
 
   assert(defaultCapacity <= maximumCapacity.getOrElse(defaultCapacity))
 
-  private def trimCapacity(capacity: Int):Int = maximumCapacity match {
-    case None => capacity
-    case Some(max) => scala.math.min(max, capacity)
-  }
-
   private def trimCapacity(capacityOption: Option[Int]):Int = capacityOption match {
     case None => defaultCapacity
-    case Some(capacity) => trimCapacity(capacity)
+    case Some(capacity) => maximumCapacity match {
+      case None => capacity
+      case Some(max) => scala.math.min(max, capacity)
+    }
   }
 
   private def extractPlace(parsedNode: Node, node: XmlNode): ParseOutput[Place] = ParseOutput(node) {
@@ -47,8 +45,10 @@ class SnoopyParser(val root: XmlNode,
 
   private def extractNode(nodeType: String, node: XmlNode): ParseOutput[(Option[Place], Option[Transition])] = ParseOutput(node) {
     val id = (node \@ "id").toInt
-    val nameAttribute = (node \ "attribute") find { attr => attr \@ "name" == "Name" }
-    val name = text(nameAttribute.get).get.trim
+    val Some(nameAttribute) = (node \ "attribute") find { attr => attr \@ "name" == "Name" }
+    val Some(textValue) = text(nameAttribute)
+    val name = textValue.trim
+
     val parsedNode = new Node(id, name)
     nodeType match {
       case "Place" => (Some(extractPlace(parsedNode, node).get), None)
@@ -73,7 +73,7 @@ class SnoopyParser(val root: XmlNode,
       node <- nodeclass \ eltName
     } yield parser(nodeType, node)
     val (failures, successes) = result.partition(_.failed)
-    println("Parsing failed for: " + failures.length + " nodes")
+    println(s"Parsing failed for: ${failures.length} nodes")
     if(failures.nonEmpty) {
       println("Failed for:")
       for(Failure(failedNode, explanation) <- failures) {

@@ -6,6 +6,8 @@ object State {
   def empty:State = new State(new TreeMap())
 
   def apply(elems: (Place, Int)*):State = new State(SortedMap(elems: _*))
+
+  def create(elems: Iterable[(Place, Int)]):State = State(elems.toSeq :_*)
 }
 
 class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunction[Place, Int] {
@@ -27,23 +29,23 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
   def isActive: Traversable[Place] => Boolean = setContains(activePlaces)
   def isFree: Traversable[Place] => Boolean = setContains(freePlaces)
 
-  def decrementPlace(place: Place, value: Int = 1): Option[State] = {
+  def decrementPlace(place: Place): Option[State] = {
     // TODO merge decrement and increment
     val oldValue = placesValues get place match {
       case Some(v) => v
       case None => 0
     }
-    val newValue = oldValue - value
+    val newValue = oldValue - 1
 
     if(newValue < 0) None else Some(new State(placesValues + (place -> newValue)))
   }
 
-  def incrementPlace(place: Place, value: Int = 1): Option[State] = {
+  def incrementPlace(place: Place): Option[State] = {
     val oldValue = placesValues get place match {
       case Some(v) => v
       case None => 0
     }
-    val newValue = oldValue + value
+    val newValue = oldValue + 1
 
     if(newValue >= place.max) None else Some(new State(placesValues + (place -> newValue)))
   }
@@ -57,11 +59,11 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
     }
   }
 
-  def decrementPlaces(places: Traversable[Place], value: Int = 1): Option[State] =
-    accumulate { case (tempState, place) => tempState.decrementPlace(place, value) }(places)
+  def decrementPlaces(places: Traversable[Place]): Option[State] =
+    accumulate { case (tempState, place) => tempState.decrementPlace(place) }(places)
 
-  def incrementPlaces(places: Traversable[Place], value: Int = 1): Option[State] =
-    accumulate { case (tempState, place) => tempState.incrementPlace(place, value) }(places)
+  def incrementPlaces(places: Traversable[Place]): Option[State] =
+    accumulate { case (tempState, place) => tempState.incrementPlace(place) }(places)
 
   override def isDefinedAt(x: Place): Boolean = placesValues contains x
 
