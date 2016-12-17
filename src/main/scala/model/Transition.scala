@@ -1,7 +1,7 @@
 package model
 
 object Transition {
-  def apply(name: String) = new Transition(name, Iterable(), Iterable())
+  def apply(name: String):Transition = new Transition(name, Iterable(), Iterable())
 
   def apply(input: Place*)(name: String)(output: Place*): Transition = new Transition(name, input, output)
 

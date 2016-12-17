@@ -8,16 +8,14 @@ sealed trait ParseOutput[+T] {
 }
 object ParseOutput {
   case class Success[+T](result: T) extends ParseOutput[T] {
-    def failed = false
+    def failed:Boolean = false
 
     def get: T = result
   }
   case class Failure(node: XmlNode, explanation:String = "Unavailable") extends ParseOutput[Nothing] {
-    def failed = true
-    def get = ??? // TODO find nice exception to be thrown
+    def failed:Boolean = true
+    def get:Nothing = throw new NoSuchElementException("Failure.get")
   }
-
-  // def apply[T](node: XmlNode)(expression: => ParseOutput[T]): ParseOutput[T] = expression
 
   def apply[T](node: XmlNode)(expression: => T): ParseOutput[T] = try {
     Success(expression)

@@ -3,7 +3,9 @@
   <component name="ScalaCompilerConfiguration">
     <profile name="SBT 1" modules="petrinet">
       <option name="deprecationWarnings" value="true" />
+      <option name="uncheckedWarnings" value="true" />
       <parameters>
+        <parameter value="-Xlint:_" />
         <parameter value="-Ypartial-unification" />
       </parameters>
     </profile>

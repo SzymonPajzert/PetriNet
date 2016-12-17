@@ -3,7 +3,7 @@ package model
 import scala.collection.immutable.{TreeMap, SortedMap}
 
 object State {
-  def empty = new State(new TreeMap())
+  def empty:State = new State(new TreeMap())
 
   def apply(elems: (Place, Int)*):State = new State(SortedMap(elems: _*))
 }
@@ -21,21 +21,21 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
   val activePlaces: Set[Place] = placesSatisfying { (place, value) =>  value > 0 }
   val freePlaces: Set[Place] = placesSatisfying { (place, value) =>   value + 1 < place.max }
 
-  def setContains(places: Set[Place])(subPlaces: Traversable[Place]) =
+  def setContains(places: Set[Place])(subPlaces: Traversable[Place]):Boolean =
     (for(place <- subPlaces) yield places contains place) reduce (_ && _)
 
   def isActive: Traversable[Place] => Boolean = setContains(activePlaces)
   def isFree: Traversable[Place] => Boolean = setContains(freePlaces)
 
   def decrementPlace(place: Place, value: Int = 1): Option[State] = {
+    // TODO merge decrement and increment
     val oldValue = placesValues get place match {
       case Some(v) => v
       case None => 0
     }
     val newValue = oldValue - value
 
-    if(newValue < 0) None else
-      Some(new State(placesValues + (place -> newValue)))
+    if(newValue < 0) None else Some(new State(placesValues + (place -> newValue)))
   }
 
   def incrementPlace(place: Place, value: Int = 1): Option[State] = {
@@ -45,8 +45,7 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
     }
     val newValue = oldValue + value
 
-    if(newValue >= place.max) None else
-      Some(new State(placesValues + (place -> newValue)))
+    if(newValue >= place.max) None else Some(new State(placesValues + (place -> newValue)))
   }
 
   private def accumulate(map: (State, Place) => Option[State])(places: Traversable[Place]): Option[State] = {
@@ -68,16 +67,16 @@ class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunc
 
   override def apply(v1: Place): Int = placesValues(v1)
 
-  override def toString = {
+  override def toString:String = {
     val namePairs = for ((place, value) <- placesValues) yield s"${place.name}=$value"
     "State(" + (namePairs mkString ", ") + ")"
   }
 
-  override def hashCode() = {
+  override def hashCode():Int = {
     placesValues.hashCode()
   }
 
-  override def equals(that: Any) = {
+  override def equals(that: Any):Boolean = {
     that match {
       case state: State => this.placesValues equals state.placesValues
       case _ => false

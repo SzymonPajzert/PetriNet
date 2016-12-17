@@ -15,6 +15,8 @@ libraryDependencies ++= Seq(
 
 scalacOptions ++= Seq(
   "-deprecation",
+  "-unchecked",
+  "-Xlint:_",
   "-Ypartial-unification"
 )
 
