@@ -1,5 +1,7 @@
 package model
 
+import org.scalatest.FlatSpec
+
 object PetriNetTestData {
 
   val Pa = Place("aaa", 2)
@@ -18,4 +20,40 @@ object PetriNetTestData {
   val thirdState = State(Pa -> 0, Pb -> 1, Pc -> 0)
 
   val states = Seq(firstState, secondState, thirdState)
+}
+
+class TransitionTest extends FlatSpec with TransitionBehaviour {
+  import PetriNetTestData._
+
+  behavior of "Transition A"
+  it should behave like activeTransition(Ta, firstState)
+  it should behave like correctTransition(Ta, firstState, secondState)
+  it should behave like inactiveTransition(Ta, secondState, thirdState)
+
+  behavior of "Transition B"
+  it should behave like inactiveTransition(Tb, firstState, thirdState)
+  it should behave like activeTransition(Tb, secondState)
+  it should behave like correctTransition(Tb, secondState, thirdState)
+
+  behavior of "Transition C"
+  it should behave like inactiveTransition(Tc, secondState, firstState)
+  it should behave like activeTransition(Tc, thirdState)
+  it should behave like correctTransition(Tc, thirdState, firstState)
+
+}
+
+class StateTest extends FlatSpec with StateBehaviour {
+  import PetriNetTestData._
+
+  behavior of "First state"
+  it should behave like consistentState(firstState, Pa, Pb, Pc)
+  it should behave like activeState(firstState, Pa, Pb)
+
+  behavior of "Second state"
+  it should behave like consistentState(secondState, Pa, Pb, Pc)
+  it should behave like activeState(secondState, Pc)
+
+  behavior of "Third state"
+  it should behave like consistentState(thirdState, Pa, Pb, Pc)
+  it should behave like activeState(thirdState, Pb)
 }

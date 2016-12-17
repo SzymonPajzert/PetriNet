@@ -40,7 +40,7 @@ class PetriNetTest extends FunSuite {
     val Seq(firstActive, secondActive, thirdActive) = for(state <- states) yield net.activeTransitions(state).toSeq
     assert(firstActive.contains(Ta))
     assert(secondActive.contains(Tb))
-    assert(thirdActive.isEmpty)
+    assert(thirdActive.contains(Tc))
   }
 
 

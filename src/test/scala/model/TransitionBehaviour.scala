@@ -46,23 +46,3 @@ trait TransitionBehaviour { this: FlatSpec =>
   }
 
 }
-
-class TransitionTest extends FlatSpec with TransitionBehaviour {
-  import PetriNetTestData._
-
-  behavior of "Transition A"
-  it should behave like activeTransition(Ta, firstState)
-  it should behave like correctTransition(Ta, firstState, secondState)
-  it should behave like inactiveTransition(Ta, secondState, thirdState)
-
-  behavior of "Transition B"
-  it should behave like inactiveTransition(Tb, firstState, thirdState)
-  it should behave like activeTransition(Tb, secondState)
-  it should behave like correctTransition(Tb, secondState, thirdState)
-
-  behavior of "Transition C"
-  it should behave like inactiveTransition(Tc, secondState, firstState)
-  it should behave like activeTransition(Tc, thirdState)
-  it should behave like correctTransition(Tc, thirdState, firstState)
-
-}

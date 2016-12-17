@@ -44,19 +44,3 @@ trait StateBehaviour { this: FlatSpec =>
     }
   }
 }
-
-class StateTest extends FlatSpec with StateBehaviour {
-  import PetriNetTestData._
-
-  behavior of "First state"
-  it should behave like consistentState(firstState, Pa, Pb, Pc)
-  it should behave like activeState(firstState, Pa, Pb)
-
-  behavior of "Second state"
-  it should behave like consistentState(secondState, Pa, Pb, Pc)
-  it should behave like activeState(secondState, Pc)
-
-  behavior of "Third state"
-  it should behave like consistentState(thirdState, Pa, Pb, Pc)
-  it should behave like activeState(thirdState, Pb)
-}
