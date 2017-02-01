@@ -17,8 +17,9 @@ class PetriNet$Test extends FunSuite{
     assert(!transitions.contains(Tb))
   }
 
+  /* TODO
   test("testApply") {
 
-  }
+  }*/
 
 }

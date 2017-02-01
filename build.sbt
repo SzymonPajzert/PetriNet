@@ -19,6 +19,9 @@ libraryDependencies ++= Seq(
 
 // Consider turning it off for Option2Iterable
 wartremoverWarnings in (Compile, compile) ++= Warts.allBut(Wart.Option2Iterable, Wart.NonUnitStatements)
-coverageEnabled := true
+coverageEnabled in Test:= true
 
 logBuffered in Test := false
+
+mainClass in (Compile, packageBin) := Some("petrify.spark.BFS")
+publishArtifact in (Compile, packageBin) := true

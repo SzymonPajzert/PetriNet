@@ -8,7 +8,7 @@ object Transition {
   def unapply(arg: Transition): Option[String] = Some(arg.name)
 }
 
-class Transition private (val name:String, val input: Iterable[Place], val output: Iterable[Place]) {
+class Transition private (val name:String, val input: Iterable[Place], val output: Iterable[Place]) extends Serializable {
   def addInput(additionalInput: Place*):Transition = new Transition(name, input ++ additionalInput, output)
 
   def addOutput(additionalOutput: Place*):Transition = new Transition(name, input, output ++ additionalOutput)

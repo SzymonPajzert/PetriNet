@@ -10,7 +10,9 @@ object State {
   def create(elems: Iterable[(Place, Int)]):State = State(elems.toSeq :_*)
 }
 
-class State private(val placesValues: SortedMap[Place, Int]) extends PartialFunction[Place, Int] {
+class State private(val placesValues: SortedMap[Place, Int])
+  extends PartialFunction[Place, Int]
+  with Serializable {
 
   def places : Iterable[Place] = placesValues.keys
 

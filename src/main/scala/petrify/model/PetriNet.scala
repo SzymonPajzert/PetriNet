@@ -18,7 +18,9 @@ object PetriNet {
   }
 }
 
-class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition]) extends Function[State, Iterable[State]] {
+class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition])
+  extends Function[State, Iterable[State]]
+  with Serializable {
 
   def getPlace(name: String):Option[Place] = places get name
 

@@ -7,6 +7,12 @@ import scala.collection.immutable.HashMap
 object NoSuchTransition extends NoSuchElementException
 object NoSuchPlace extends NoSuchElementException
 
+object SnoopyBuilder {
+  def apply(parsedPlaces: Iterable[ParPlace],
+            parsedTransitions: Iterable[ParTransition],
+            edges: Iterable[ParEdge]): SnoopyBuilder = new SnoopyBuilder(parsedPlaces, parsedTransitions, edges)
+}
+
 class SnoopyBuilder(parsedPlaces: => Iterable[ParPlace],
                     parsedTransitions: => Iterable[ParTransition],
                     edges: => Iterable[ParEdge]) {
