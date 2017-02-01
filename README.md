@@ -1,4 +1,4 @@
-# PetriNet
+# PetriNet [![Build Status](https://travis-ci.com/SzymonPajzert/PetriNet.svg?token=sifZqAUGMfhp9sseTbjy&branch=master)](https://travis-ci.com/SzymonPajzert/PetriNet)
 
 ## Resources to read
 * From prof. Sroki:
