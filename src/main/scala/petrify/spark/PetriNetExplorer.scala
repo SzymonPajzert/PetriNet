@@ -9,7 +9,7 @@ import petrify.model.{PetriNet, Place, State, Transition}
   */
 object PetriNetExplorer {
   def lookForHelper(petriNet: PetriNet, pastStates: RDD[State], toIterate: RDD[State], end: State):Boolean = {
-    val nextStates = toIterate.flatMap(petriNet).subtract(pastStates).persist()
+    val nextStates = toIterate.flatMap(petriNet.iterate).subtract(pastStates).persist()
     if (nextStates.isEmpty()) false else {
       if(nextStates.filter(_ == end).count() > 0) true else {
         val newPastStates = pastStates union nextStates

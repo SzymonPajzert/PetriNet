@@ -9,8 +9,6 @@ object PetriNet {
     for(transition <- transitions) {
       for(place <- transition.input ++ transition.output) {
         assert(placeSet.contains(place))
-        // TODO find nice exception to be thrown
-        // TODO find where place exceptions in scala
       }
     }
 
@@ -19,7 +17,7 @@ object PetriNet {
 }
 
 class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition])
-  extends Function[State, Iterable[State]]
+  extends PetriNetAPI
   with Serializable {
 
   def getPlace(name: String):Option[Place] = places get name
@@ -36,9 +34,15 @@ class PetriNet private (val places: Map[String, Place], val transitions: Map[Str
     case Some(_) => this
   }
 
-  def activeTransitions(state: State):Iterable[Transition] = transitions.values filter { case x => x.isActive(state) }
+  def activeTransitions(state: State):Iterable[Transition] = transitions.values filter { x => x.isActive(state) }
 
-  override def apply(state: State): Iterable[State] = {
-    activeTransitions(state) flatMap { case transition => transition availableStates state }
+  override def iterate(state: State): Iterable[State] = {
+    activeTransitions(state) flatMap { transition => transition availableStates state }
+  }
+
+  override def iterate(state: State, places: Place*): PetriNetAPI.CollectionObservingState = {
+    val placeSet = places.toSet
+    val states = activeTransitions(state) flatMap { transition => transition observeAvailableStates (state, placeSet) }
+    states.toMap
   }
 }
