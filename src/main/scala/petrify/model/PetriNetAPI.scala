@@ -5,12 +5,15 @@ import scala.util.Random
 object PetriNetAPI {
   type CollectionObservingState = Map[State, (Place => Boolean)]
   type ObservingState = (State, (Place => Boolean))
+
+  private def randomElement[T](iterable: Iterable[T]): T = Random.shuffle(iterable).head
 }
 
 trait PetriNetAPI {
   import PetriNetAPI._
 
-  private def randomElement[T](iterable: Iterable[T]): T = Random.shuffle(iterable).head
+  def places: Set[Place]
+  def transitions: Set[Transition]
 
   final def apply(state: State): State = randomElement(iterate(state))
   final def apply(state: State, places: Place*): ObservingState = randomElement(iterate(state, places: _*))

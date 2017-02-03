@@ -1,7 +1,7 @@
 package petrify.model
 
 object PetriNet {
-  def empty:PetriNet = new PetriNet(Map(), Map())
+  def empty:PetriNet = new PetriNet(Set(), Set())
 
   def apply(places: Iterable[Place], transitions: Iterable[Transition]): PetriNet = {
     val placeSet = places.toSet
@@ -12,29 +12,23 @@ object PetriNet {
       }
     }
 
-    new PetriNet(places.map(x => (x.name, x)).toMap, transitions.map(x => (x.name, x)).toMap)
+    new PetriNet(placeSet, transitions.toSet)
   }
 }
 
-class PetriNet private (val places: Map[String, Place], val transitions: Map[String, Transition])
-  extends PetriNetAPI
-  with Serializable {
+class PetriNet private (override val places: Set[Place], override val transitions: Set[Transition])
+    extends PetriNetAPI
+    with Serializable {
 
-  def getPlace(name: String):Option[Place] = places get name
-
-  def addPlace(place: Place): PetriNet = getPlace(place.name) match {
-    case None => new PetriNet(places + (place.name -> place), transitions)
-    case Some(_) => this
+  def addPlace(place: Place): PetriNet = if(places contains place) this else {
+    new PetriNet(places + place, transitions)
   }
 
-  def getTransition(name: String): Option[Transition] = transitions get name
-
-  def addTransition(transition: Transition): PetriNet = getTransition(transition.name) match {
-    case None => new PetriNet(places, transitions + (transition.name -> transition))
-    case Some(_) => this
+  def addTransition(transition: Transition): PetriNet = if(transitions contains transition) this else {
+    new PetriNet(places, transitions + transition)
   }
 
-  def activeTransitions(state: State):Iterable[Transition] = transitions.values filter { x => x.isActive(state) }
+  def activeTransitions(state: State):Iterable[Transition] = transitions filter { x => x.isActive(state) }
 
   override def iterate(state: State): Iterable[State] = {
     activeTransitions(state) flatMap { transition => transition availableStates state }

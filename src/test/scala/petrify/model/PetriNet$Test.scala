@@ -7,8 +7,8 @@ class PetriNet$Test extends FunSuite{
 
   test("testEmpty") {
     val empty = PetriNet.empty
-    val places = empty.places.values.toSet
-    val transitions = empty.transitions.values.toSet
+    val places = empty.places
+    val transitions = empty.transitions
 
     assert(!places.contains(Pa))
     assert(!places.contains(Pb))
