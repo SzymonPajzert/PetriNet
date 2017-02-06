@@ -1,5 +1,9 @@
 package petrify.model
 
+// TODO switch to petrify.spark
+
+// TODO make it more behavior like
+
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
@@ -8,8 +12,9 @@ import petrify.spark.PetriNetExplorer
 class PetriNetExplorerBehaviour extends FlatSpec with BeforeAndAfter {
   import PetriNetTestData._
 
-
   var sc : SparkContext = _
+
+  val explorer = PetriNetExplorer(IdentityCompressor)(net)
 
   before {
     val conf = new SparkConf()
@@ -23,15 +28,15 @@ class PetriNetExplorerBehaviour extends FlatSpec with BeforeAndAfter {
     sc.stop()
   }
 
-  def findPlaces(net: PetriNet, begin:State, end:State): Unit = {
-    assert(PetriNetExplorer.lookFor(sc, net, begin, end))
+  def findPlaces(begin:State, end:State): Unit = {
+    assert(explorer.lookFor(sc, begin, end))
   }
 
-  def notFindPlaces(net: PetriNet, begin:State, end:State): Unit = {
-    assert(PetriNetExplorer.lookFor(sc, net, begin, end))
+  def notFindPlaces(begin:State, end:State): Unit = {
+    assert(explorer.lookFor(sc,begin, end))
   }
   
   it should "find places" in {
-    assert(PetriNetExplorer.lookFor(sc, net, firstState, thirdState)) 
+    assert(explorer.lookFor(sc, firstState, thirdState))
   }
 }
