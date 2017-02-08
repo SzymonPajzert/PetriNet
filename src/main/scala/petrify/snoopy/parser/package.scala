@@ -4,10 +4,13 @@ import petrify.model.{PetriNet, State}
 
 import scala.xml.XML
 
-/**
-  * Created by szymonpajzert on 27.12.16.
-  */
 package object parser {
+
+  def tupleToParseResult(tuple: (PetriNet, State)) : ParseResult = {
+    ParseResult(tuple._1, tuple._2)
+  }
+
+
   def read(file:String):(PetriNet, State) = {
     val parser = SnoopyParser(XML.loadFile(file))
     val builder = SnoopyBuilder(parser.places, parser.transitions, parser.edges)

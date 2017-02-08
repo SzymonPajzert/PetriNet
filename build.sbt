@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint:_")
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint:_", "-Xlog-implicits")
 scalacOptions in (Compile, doc) ++= Seq("-unchecked", "-deprecation", "-diagrams", "-implicits", "-skip-packages", "samples")
 
 dependencyOverrides += "org.scala-lang" % "scala-compiler" % scalaVersion.value

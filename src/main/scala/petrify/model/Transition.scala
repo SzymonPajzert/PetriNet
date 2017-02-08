@@ -1,5 +1,7 @@
 package petrify.model
 
+import petrify.api
+
 object Transition {
   def apply(name: String):Transition = new Transition(name, Set(), Set())
 
@@ -19,7 +21,7 @@ class Transition private (val name:String, val input: Set[Place], val output: Se
     (state decrementPlaces input) flatMap (decreasedState => decreasedState incrementPlaces output)
   }
 
-  def observeAvailableStates(state: State, places: Set[Place]): Option[PetriNetAPI.ObservingState] = {
+  def observeAvailableStates(state: State, places: Set[Place]): Option[api.PetriNet.ObservingState] = {
     def createMap[K, V](keys: Iterable[K], value: V): Map[K, V] = {
       (for(key <- keys) yield key -> value).toMap
     }

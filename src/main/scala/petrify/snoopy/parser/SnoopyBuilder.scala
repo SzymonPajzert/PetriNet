@@ -4,6 +4,8 @@ import petrify.snoopy.model.{Node, Edge => ParEdge, Place => ParPlace, Transitio
 
 import scala.collection.immutable.HashMap
 
+case class ParseResult(net: PetriNet, state: State) {}
+
 object NoSuchTransition extends NoSuchElementException
 object NoSuchPlace extends NoSuchElementException
 
