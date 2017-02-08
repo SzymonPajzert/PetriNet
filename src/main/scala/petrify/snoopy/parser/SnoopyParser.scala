@@ -1,8 +1,8 @@
 package petrify.snoopy.parser
 
-import scala.xml.{PCData, XML, Node => XmlNode}
+import scala.xml.{Text, XML, Node => XmlNode}
 import petrify.snoopy.model._
-import petrify.snoopy.model.ParseOutput._
+import petrify.snoopy.model.ParseOutput
 
 object SnoopyParser {
   val defaultCapacity = 3
@@ -12,18 +12,21 @@ object SnoopyParser {
 
   def load(path: String):SnoopyParser = SnoopyParser(XML.loadFile(path))
 
-  def text(node: XmlNode): Option[String] =
-    node.child find { child => child.isInstanceOf[PCData] } map { textNode => textNode.text }
+  def text(node: XmlNode): Option[String] = {
+    node.child find { child => child.isInstanceOf[Text] } map { textNode => textNode.text }
+  }
 }
 
 class SnoopyParser(val root: XmlNode,
                    val defaultCapacity:Int = SnoopyParser.defaultCapacity,
-                   val maximumCapacity:Option[Int] = SnoopyParser.maximumCapacity) {
+                   val maximumCapacity:Option[Int] = SnoopyParser.maximumCapacity)
+    extends Parser {
+
   import SnoopyParser.text
 
   assert(defaultCapacity <= maximumCapacity.getOrElse(defaultCapacity))
 
-  private def trimCapacity(capacityOption: Option[Int]):Int = capacityOption match {
+  def trimCapacity(capacityOption: Option[Int]):Int = capacityOption match {
     case None => defaultCapacity
     case Some(capacity) => maximumCapacity match {
       case None => capacity
@@ -31,8 +34,14 @@ class SnoopyParser(val root: XmlNode,
     }
   }
 
-  private def extractPlace(parsedNode: Node, node: XmlNode): ParseOutput[Place] = ParseOutput(node) {
-    (node \ "attribute") find { attr => attr \@ "name" == "Comment" } flatMap { node => text(node) } match {
+  def extractPlace(parsedNode: Node, node: XmlNode): ParseOutput[Place] = {
+    val place = {
+      (node \ "attribute") find
+      { attr => attr \@ "name" == "Comment" } flatMap
+      { node => text(node) }
+    }
+
+    place match {
       case None => parsedNode.place(defaultCapacity)
       case Some(maxString) =>
         lazy val split = maxString.trim.split(" |\n")
@@ -43,7 +52,7 @@ class SnoopyParser(val root: XmlNode,
     }
   }
 
-  private def extractNode(nodeType: String, node: XmlNode): ParseOutput[(Option[Place], Option[Transition])] = ParseOutput(node) {
+  private def extractNode(nodeType: String, node: XmlNode): ParseOutput[Node] = {
     val id = (node \@ "id").toInt
     val Some(nameAttribute) = (node \ "attribute") find { attr => attr \@ "name" == "Name" }
     val Some(textValue) = text(nameAttribute)
@@ -51,14 +60,14 @@ class SnoopyParser(val root: XmlNode,
 
     val parsedNode = new Node(id, name)
     nodeType match {
-      case "Place" => (Some(extractPlace(parsedNode, node).get), None)
-      case "Transition" => (None, Some(parsedNode.transition()))
-      case "Coarse Transition" => (None, Some(parsedNode.transition()))
-      case notSupportedType => throw new TypeNotSupported(notSupportedType)
+      case "Place" => extractPlace(parsedNode, node)
+      case "Transition" => parsedNode.transition()
+      case "Coarse Transition" => parsedNode.transition()
+      case notSupportedType => Left(node)
     }
   }
 
-  private def extractEdge(nodeType: String, node: XmlNode): ParseOutput[Edge]= ParseOutput(node) {
+  private def extractEdge(nodeType: String, node: XmlNode): ParseOutput[Edge]= {
     val id = (node \@ "id").toInt
     val sourceId = (node \@ "source").toInt
     val targetId = (node \@ "target").toInt
@@ -66,31 +75,40 @@ class SnoopyParser(val root: XmlNode,
     Edge(nodeType, id, sourceId, targetId, multiplicity)
   }
 
-  private def extractElt[T](eltName: String, parser: (String, XmlNode) => ParseOutput[T])(root: XmlNode):Iterable[T] = {
-    lazy val result = for {
+  type Parser[T] = (String, XmlNode) => ParseOutput[T]
+
+  private def extractElt[T](eltName: String, parser: Parser[T])(root: XmlNode):Iterable[T] = {
+    val result = for {
       nodeclass <- root \\ s"${eltName}class"
       nodeType = nodeclass \@ "name"
       node <- nodeclass \ eltName
     } yield parser(nodeType, node)
-    val (failures, successes) = result.partition(_.failed)
+
+    val (failures, successes) = (
+      result collect { case Left(node) => node },
+      result collect { case Right(output) => output }
+    )
+
     println(s"Parsing failed for: ${failures.length} nodes")
     if(failures.nonEmpty) {
       println("Failed for:")
-      for(Failure(failedNode, explanation) <- failures) {
-        println(explanation)
+      for(node <- failures) {
+        println(node)
       }
     }
 
-    successes map {_.get}
+    successes
   }
 
   private def extractNodes(root : XmlNode) = extractElt("node", extractNode)(root)
   private def extractEdges(root : XmlNode) = extractElt("edge", extractEdge)(root)
 
-  lazy val (placesOpt, transitionsOpt) = extractNodes(root).unzip
-  lazy val places = placesOpt.flatten
-  lazy val transitions = transitionsOpt.flatten
-  lazy val edges = extractEdges(root)
+  val (placesOpt, transitionsOpt) = (extractNodes(root) map {
+    case transition : Transition => (None, Some(transition))
+    case place : Place => (Some(place), None)
+  }).unzip
 
-  def parse: (Iterable[Place], Iterable[Transition], Iterable[Edge]) = (places, transitions, edges)
+  override val places = placesOpt.flatten
+  override val transitions = transitionsOpt.flatten
+  override val edges = extractEdges(root)
 }

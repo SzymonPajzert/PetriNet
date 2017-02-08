@@ -1,8 +1,8 @@
 *.class
 *.log
 
-.idea/libraries
-.idea/modules
+.idea
+.idea
 
 # sbt specific
 .cache

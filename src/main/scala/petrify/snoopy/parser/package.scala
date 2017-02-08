@@ -10,7 +10,7 @@ import scala.xml.XML
 package object parser {
   def read(file:String):(PetriNet, State) = {
     val parser = SnoopyParser(XML.loadFile(file))
-    val builder = (SnoopyBuilder.apply _).tupled(parser.parse)
+    val builder = SnoopyBuilder(parser.places, parser.transitions, parser.edges)
     builder.build
   }
 

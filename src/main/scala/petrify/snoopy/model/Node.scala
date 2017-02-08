@@ -1,6 +1,6 @@
 package petrify.snoopy.model
 
-private[snoopy] sealed class Node(val id: Int, val name: String) {
+sealed class Node(val id: Int, val name: String) {
   def place(capacity: Int):Place = Place(id, name, capacity)
   def transition():Transition = Transition(id, name)
 }
