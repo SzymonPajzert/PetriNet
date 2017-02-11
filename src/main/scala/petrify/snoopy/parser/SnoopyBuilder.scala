@@ -40,6 +40,7 @@ class SnoopyBuilder(parsedPlaces: => Iterable[ParPlace],
   def build:(PetriNet, State) = {
 
     val newTransitions = (edges foldLeft transitions) { updateTransition(_, _) }
-    (PetriNet(places.values, newTransitions.values), State.empty)
+    // TODO Parsing states - remove this one
+    (PetriNet(places.values, newTransitions.values), State.create(places.values map (p => (p, 1)) ))
   }
 }

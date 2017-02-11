@@ -25,8 +25,9 @@ class State private(val placesValues: SortedMap[Place, Int])
   val activePlaces: Set[Place] = placesSatisfying { (place, value) =>  value > 0 }
   val freePlaces: Set[Place] = placesSatisfying { (place, value) =>   value + 1 < place.max }
 
+  // TODO Add regression test to test for empty subPlaces
   def setContains(places: Set[Place])(subPlaces: Traversable[Place]):Boolean =
-    (for(place <- subPlaces) yield places contains place) reduce (_ && _)
+    ((for(place <- subPlaces) yield places contains place) fold true) (_ && _)
 
   def isActive: Traversable[Place] => Boolean = setContains(activePlaces)
   def isFree: Traversable[Place] => Boolean = setContains(freePlaces)
@@ -72,7 +73,7 @@ class State private(val placesValues: SortedMap[Place, Int])
   override def apply(v1: Place): Int = placesValues(v1)
 
   override def toString:String = {
-    val namePairs = for ((place, value) <- placesValues) yield s"${place.name}=$value"
+    val namePairs = for ((place, value) <- placesValues) yield s"${place.name}=$value<=${place.max}"
     "State(" + (namePairs mkString ", ") + ")"
   }
 

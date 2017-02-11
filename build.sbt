@@ -25,6 +25,7 @@ coverageEnabled in Test:= true
 
 logBuffered in Test := false
 
+// TODO make example files ignoring work
 mappings in (Compile, packageBin) ~= { _.filter(!_._1.getName.endsWith(".java")) }
 // mainClass in (Compile, packageBin) := Some("petrify.spark.BFS")
 publishArtifact in (Compile, packageBin) := true
