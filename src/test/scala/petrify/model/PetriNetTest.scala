@@ -25,14 +25,6 @@ class PetriNetTest extends FunSuite {
     assert(net.iterate(firstState).toSeq.contains(secondState))
   }
 
-  test("testActiveTransitions") {
-    val Seq(firstActive, secondActive, thirdActive) = for(state <- states) yield net.activeTransitions(state).toSeq
-    assert(firstActive.contains(Ta))
-    assert(secondActive.contains(Tb))
-    assert(thirdActive.contains(Tc))
-  }
-
-
   test("testEmpty") {
     //TODO for any state returns empty consecutive states
   }

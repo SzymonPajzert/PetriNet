@@ -10,15 +10,15 @@ object Transition {
   def unapply(arg: Transition): Option[String] = Some(arg.name)
 }
 
-class Transition private (val name:String, val input: Set[Place], val output: Set[Place]) extends Serializable {
+class Transition private (val name:String, val input: Set[Place], val output: Set[Place]) extends api.Transition {
+  def places = input ++ output
+
   def addInput(additionalInput: Place*):Transition = new Transition(name, input ++ additionalInput, output)
 
   def addOutput(additionalOutput: Place*):Transition = new Transition(name, input, output ++ additionalOutput)
 
-  def isActive(state: State): Boolean = (state isActive input) && (state isFree output)
-
   def availableStates(state: State) : Option[State] = {
-    (state decrementPlaces input) flatMap (decreasedState => decreasedState incrementPlaces output)
+    (state decrementPlaces input) filter (_ isFree output) flatMap (decreasedState => decreasedState incrementPlaces output)
   }
 
   def observeAvailableStates(state: State, places: Set[Place]): Option[api.PetriNet.ObservingState] = {

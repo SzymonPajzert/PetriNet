@@ -4,9 +4,9 @@ import org.scalatest.FlatSpec
 
 object PetriNetTestData {
 
-  val Pa = Place("aaa", 2)
-  val Pb = Place("bbb", 3)
-  val Pc = Place("ccc", 3)
+  val Pa = Place("aaa", 1)
+  val Pb = Place("bbb", 1)
+  val Pc = Place("ccc", 1)
   val Pd = Place("ddd", 1)
 
   val Ta = Transition(Pa, Pb)("AAA")(Pc)
