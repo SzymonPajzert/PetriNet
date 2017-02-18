@@ -11,6 +11,9 @@ import scala.collection.JavaConverters;
 import java.util.Collection;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+
 import java.lang.Iterable;
 import java.util.stream.Collectors;
 import java.util.LinkedList;
@@ -22,11 +25,12 @@ public class Example {
 	}
 	
 
-	public static void main(String[] args) {
-		String file = "./file.spept";
+	public static void main(String[] args) throws Exception {
+		File initialFile = new File("./file.spept");
+		InputStream targetStream = new FileInputStream(initialFile);
 
 		System.out.println("Parsing started");
-		ParseResult result = package$.MODULE$.tupleToParseResult(package$.MODULE$.read(file));
+		ParseResult result = package$.MODULE$.tupleToParseResult(package$.MODULE$.read(targetStream));
 
 		PetriNet net = result.net();
 		State state = result.state();
