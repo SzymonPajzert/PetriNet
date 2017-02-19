@@ -1,13 +1,19 @@
 package petrify.snoopy.parser
 import petrify.model.{PetriNet, Place, State, Transition}
-import petrify.snoopy.model.{Node, Edge => ParEdge, Place => ParPlace, Transition => ParTransition}
+import petrify.snoopy.model.{Node, Edge => ParEdge, Place => ParPlace, Transition => ParTransition, _} // TODO save it as a good knowledge
+
+// TODO save as knowledge: sbt test:console
 
 import scala.collection.immutable.HashMap
 
 case class ParseResult(net: PetriNet, state: State) {}
 
-object NoSuchTransition extends NoSuchElementException
-object NoSuchPlace extends NoSuchElementException
+// TODO remove this redundancy of edge type
+sealed trait DirectedEdgeType
+final case object InputEdge extends DirectedEdgeType
+final case object OutputEdge extends DirectedEdgeType
+final case object DirectedReadEdge extends DirectedEdgeType
+final case object DirectedInhibitorEdge extends DirectedEdgeType
 
 object SnoopyBuilder {
   def apply(parsedPlaces: Iterable[ParPlace],
@@ -26,14 +32,27 @@ class SnoopyBuilder(parsedPlaces: => Iterable[ParPlace],
   lazy val transitions = (parsedTransitions map { case ParTransition(id, name) => (id, Transition(name)) }).toMap
 
   def updateTransition(transitions: Transitions, edge: ParEdge):Transitions = {
-    val ParEdge(_, _, source, target, _) = edge
-    val (placeId, transitionId, toTransition) =
-      if(places contains source) (source, target, true) else (target, source, false)
+    val ParEdge(edgeType, _, source, target, _) = edge
 
-    val place = places.getOrElse(placeId, throw NoSuchPlace)
-    val transition:Transition = transitions getOrElse (transitionId, throw NoSuchTransition)
+    val (placeId, transitionId, directedEdgeType:DirectedEdgeType) = edgeType match {
+      case NormalEdge => {
+        if(places contains source) (source, target, InputEdge) else (target, source, OutputEdge)
+      }
+      case ReadEdge => (source, target, DirectedReadEdge)
+      case InhibitorEdge => (source, target, DirectedInhibitorEdge)
+    }
 
-    val newTransition = if (toTransition) transition addInput place else transition addOutput place
+    val place = places(placeId)
+    val transition = transitions(transitionId)
+
+
+    val newTransition = directedEdgeType match {
+      case InputEdge => transition addInput place
+      case OutputEdge => transition addOutput place
+      case DirectedReadEdge => transition addRead place
+      case DirectedInhibitorEdge => transition addInhibitor place
+    }
+
     transitions + (transitionId -> newTransition)
   }
 

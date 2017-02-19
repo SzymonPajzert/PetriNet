@@ -25,6 +25,7 @@ class State private(val placesValues: SortedMap[Place, Int])
   val freePlaces: Set[Place] = placesSatisfying { case (place, value) =>   value + 1 <= place.max }
 
   def isActive(places: Set[Place]): Boolean = places subsetOf activePlaces
+  def isAbsent(places: Set[Place]): Boolean = (places intersect activePlaces).isEmpty
   def isFree(places: Set[Place]): Boolean = places subsetOf freePlaces
 
   // TODO test both for achieving min and max values

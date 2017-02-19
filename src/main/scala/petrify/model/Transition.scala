@@ -3,22 +3,39 @@ package petrify.model
 import petrify.api
 
 object Transition {
-  def apply(name: String):Transition = new Transition(name, Set(), Set())
+  def apply(name: String):Transition = new Transition(name, Set(), Set(), Set(), Set())
 
-  def apply(input: Place*)(name: String)(output: Place*): Transition = new Transition(name, input.toSet, output.toSet)
+  def apply(input: Place*)(name: String)(output: Place*): Transition = Transition(name, input.toSet, output.toSet, Set(), Set())
 
-  def unapply(arg: Transition): Option[String] = Some(arg.name)
+  implicit class TransitionBuilder(transition: Transition) {
+    def addInput(additional: Place*): Transition = transition.copy(input = transition.input ++ additional)
+
+    def addOutput(additional: Place*): Transition = transition.copy(output = transition.output ++ additional)
+
+    def addRead(additional: Place*): Transition = transition.copy(read = transition.read ++ additional)
+
+    def addInhibitor(additional: Place*): Transition = transition.copy(inhibitor = transition.inhibitor ++ additional)
+  }
 }
 
-class Transition private (val name:String, val input: Set[Place], val output: Set[Place]) extends api.Transition {
+final case class Transition (
+  name:String,
+  input: Set[Place],
+  output: Set[Place],
+  read: Set[Place],
+  inhibitor: Set[Place]
+) extends api.Transition {
+
   def places = input ++ output
 
-  def addInput(additionalInput: Place*):Transition = new Transition(name, input ++ additionalInput, output)
-
-  def addOutput(additionalOutput: Place*):Transition = new Transition(name, input, output ++ additionalOutput)
-
   def availableStates(state: State) : Option[State] = {
-    (state decrementPlaces input) filter (_ isFree output) flatMap (decreasedState => decreasedState incrementPlaces output)
+    if((state isActive read) && (state isAbsent inhibitor)) {
+      for {
+        decreasedState <- state decrementPlaces input
+        if decreasedState isFree output
+        result <- decreasedState incrementPlaces output
+      } yield result
+    } else None
   }
 
   def observeAvailableStates(state: State, places: Set[Place]): Option[api.PetriNet.ObservingState] = {

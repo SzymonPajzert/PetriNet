@@ -4,6 +4,7 @@ import org.scalatest.FunSuite
 
 class PetriNetTest extends FunSuite {
   import PetriNetTestData._
+  import States.{Pa, Pb, Pc, Pd}
 
   // TODO move to scala check
   test("testPlaces") {
@@ -22,7 +23,7 @@ class PetriNetTest extends FunSuite {
   }
 
   test("testApply") {
-    assert(net.iterate(firstState).toSeq.contains(secondState))
+    assert(net.iterate(states(0)).toSeq.contains(states(1)))
   }
 
   test("testEmpty") {

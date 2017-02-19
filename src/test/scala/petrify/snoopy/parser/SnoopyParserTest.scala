@@ -22,10 +22,10 @@ class SnoopyParserTest extends FunSuite {
 
   test("testEdges") {
     val subEdges = Set(
-      Edge("Inhibitor Edge",856837, 856557, 856663, 1),
-      Edge("Read Edge",679130, 677254, 677888, 1),
-      Edge("Edge", 782108, 781931, 782027, 1),
-      Edge("Edge", 1020006, 1019973, 1019920, 1)
+      Edge(InhibitorEdge, 856837, 856557, 856663, 1),
+      Edge(ReadEdge, 679130, 677254, 677888, 1),
+      Edge(NormalEdge, 782108, 781931, 782027, 1),
+      Edge(NormalEdge, 1020006, 1019973, 1019920, 1)
     )
 
     assert(subEdges subsetOf edges)
