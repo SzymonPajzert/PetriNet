@@ -35,21 +35,28 @@ class SnoopyParser(val root: XmlNode,
   }
 
   def extractPlace(parsedNode: Node, node: XmlNode): ParseOutput[Place] = {
-    val place = {
+    val Some(placeMarking) = {
+      (node \ "attribute") find
+      { attr => attr \@ "name" == "Marking" } flatMap
+      { node => text(node) }
+    }
+
+    val placeComment = {
       (node \ "attribute") find
       { attr => attr \@ "name" == "Comment" } flatMap
       { node => text(node) }
     }
 
-    place match {
-      case None => parsedNode.place(defaultCapacity)
+    val capacity = placeComment match {
+      case None => defaultCapacity
       case Some(maxString) =>
         lazy val split = maxString.trim.split(" |\n")
         lazy val pairs = split zip split.tail
         val int = pairs find {_._1 == "MAX"} map { case (_, intString) => intString.toInt }
-        val capacity = trimCapacity(int)
-        parsedNode.place(capacity)
+        trimCapacity(int)
     }
+
+    parsedNode.place(placeMarking.trim.toInt, capacity)
   }
 
   private def extractNode(nodeType: String, node: XmlNode): ParseOutput[Node] = {
@@ -89,7 +96,7 @@ class SnoopyParser(val root: XmlNode,
       result collect { case Right(output) => output }
     )
 
-    println(s"Parsing failed for: ${failures.length} nodes")
+    // TODO somehow propagate parsing fails println(s"Parsing failed for: ${failures.length} nodes")
     if(failures.nonEmpty) {
       println("Failed for:")
       for(node <- failures) {
