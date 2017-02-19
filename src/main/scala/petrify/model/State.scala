@@ -18,20 +18,17 @@ class State private(val placesValues: SortedMap[Place, Int])
 
   def values : Iterable[Int] = placesValues.values
 
-  def placesSatisfying(predicate: (Place, Int) => Boolean):Set[Place] = (for((place, value) <- placesValues) yield {
-    if(predicate(place, value)) Some(place) else None
-  }).flatten.toSet
+  def placesSatisfying(predicate: ((Place, Int)) => Boolean):Set[Place] =
+    (placesValues withFilter predicate map (_._1)).toSet
 
-  val activePlaces: Set[Place] = placesSatisfying { (place, value) =>  value > 0 }
-  val freePlaces: Set[Place] = placesSatisfying { (place, value) =>   value + 1 < place.max }
+  val activePlaces: Set[Place] = placesSatisfying { case (place, value) =>  value > 0 }
+  val freePlaces: Set[Place] = placesSatisfying { case (place, value) =>   value + 1 <= place.max }
 
-  // TODO Add regression test to test for empty subPlaces
-  def setContains(places: Set[Place])(subPlaces: Traversable[Place]):Boolean =
-    ((for(place <- subPlaces) yield places contains place) fold true) (_ && _)
+  def isActive(places: Set[Place]): Boolean = places subsetOf activePlaces
+  def isAbsent(places: Set[Place]): Boolean = (places intersect activePlaces).isEmpty
+  def isFree(places: Set[Place]): Boolean = places subsetOf freePlaces
 
-  def isActive: Traversable[Place] => Boolean = setContains(activePlaces)
-  def isFree: Traversable[Place] => Boolean = setContains(freePlaces)
-
+  // TODO test both for achieving min and max values
   def decrementPlace(place: Place): Option[State] = {
     // TODO merge decrement and increment
     val oldValue = placesValues get place match {
@@ -50,7 +47,7 @@ class State private(val placesValues: SortedMap[Place, Int])
     }
     val newValue = oldValue + 1
 
-    if(newValue >= place.max) None else Some(new State(placesValues + (place -> newValue)))
+    if(newValue > place.max) None else Some(new State(placesValues + (place -> newValue)))
   }
 
   private def accumulate(map: (State, Place) => Option[State])(places: Traversable[Place]): Option[State] = {

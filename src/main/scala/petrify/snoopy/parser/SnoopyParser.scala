@@ -72,7 +72,7 @@ class SnoopyParser(val root: XmlNode,
     val sourceId = (node \@ "source").toInt
     val targetId = (node \@ "target").toInt
     val multiplicity = 1
-    Edge(nodeType, id, sourceId, targetId, multiplicity)
+    Edge(EdgeType(nodeType), id, sourceId, targetId, multiplicity)
   }
 
   type Parser[T] = (String, XmlNode) => ParseOutput[T]

@@ -20,7 +20,7 @@ trait StateBehaviour { this: FlatSpec =>
 
     it should "have tokens not exceeding max value" in {
       for (place <- places) {
-        assert(state(place) < place.max)
+        assert(state(place) <= place.max)
       }
     }
 
@@ -34,7 +34,7 @@ trait StateBehaviour { this: FlatSpec =>
     }
 
     it should "be active for active places" in {
-      assert(state isActive activePlaces)
+      assert(state isActive activePlaces.toSet)
     }
 
     it should "contain active places separately in active places" in {

@@ -4,6 +4,7 @@ import org.scalatest.FunSuite
 
 class PetriNetTest extends FunSuite {
   import PetriNetTestData._
+  import States.{Pa, Pb, Pc, Pd}
 
   // TODO move to scala check
   test("testPlaces") {
@@ -22,16 +23,8 @@ class PetriNetTest extends FunSuite {
   }
 
   test("testApply") {
-    assert(net.iterate(firstState).toSeq.contains(secondState))
+    assert(net.iterate(states(0)).toSeq.contains(states(1)))
   }
-
-  test("testActiveTransitions") {
-    val Seq(firstActive, secondActive, thirdActive) = for(state <- states) yield net.activeTransitions(state).toSeq
-    assert(firstActive.contains(Ta))
-    assert(secondActive.contains(Tb))
-    assert(thirdActive.contains(Tc))
-  }
-
 
   test("testEmpty") {
     //TODO for any state returns empty consecutive states

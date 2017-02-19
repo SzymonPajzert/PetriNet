@@ -2,24 +2,21 @@ package petrify.model
 
 import petrify.api
 
-
 object PetriNet {
   def empty:PetriNet = new PetriNet(Set(), Set())
 
-  def apply(places: Iterable[Place], transitions: Iterable[Transition]): PetriNet = {
+  def apply(places: Iterable[Place], transitions: Iterable[api.Transition]): PetriNet = {
     val placeSet = places.toSet
 
     for(transition <- transitions) {
-      for(place <- transition.input ++ transition.output) {
-        assert(placeSet.contains(place))
-      }
+      transition.places subsetOf placeSet
     }
 
     new PetriNet(placeSet, transitions.toSet)
   }
 }
 
-class PetriNet private (override val places: Set[Place], override val transitions: Set[Transition])
+class PetriNet private (override val places: Set[Place], override val transitions: Set[api.Transition])
     extends api.PetriNet
     with Serializable {
 
@@ -27,19 +24,17 @@ class PetriNet private (override val places: Set[Place], override val transition
     new PetriNet(places + place, transitions)
   }
 
-  def addTransition(transition: Transition): PetriNet = if(transitions contains transition) this else {
+  def addTransition(transition: api.Transition): PetriNet = if(transitions contains transition) this else {
     new PetriNet(places, transitions + transition)
   }
 
-  def activeTransitions(state: api.State):Iterable[Transition] = transitions filter { x => x.isActive(state) }
-
   override def iterate(state: api.State): Iterable[State] = {
-    activeTransitions(state) flatMap { transition => transition availableStates state }
+    transitions flatMap { transition => transition availableStates state }
   }
 
   override def iterate(state: api.State, places: api.Place*): api.PetriNet.CollectionObservingState = {
     val placeSet = places.toSet
-    val states = activeTransitions(state) flatMap { transition => transition observeAvailableStates (state, placeSet) }
+    val states = transitions flatMap { transition => transition observeAvailableStates (state, placeSet) }
     states.toMap
   }
 }

@@ -3,6 +3,7 @@ package petrify.model
 import org.scalatest.FunSuite
 
 class PetriNet$Test extends FunSuite{
+  import States.{Pa, Pb, Pc, Pd}
   import PetriNetTestData._
 
   test("testEmpty") {
