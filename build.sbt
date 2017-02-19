@@ -20,7 +20,13 @@ libraryDependencies ++= Seq(
 )
 
 // Consider turning it off for Option2Iterable
-wartremoverWarnings in (Compile, compile) ++= Warts.allBut(Wart.Option2Iterable, Wart.NonUnitStatements, Wart.NoNeedForMonad)
+wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
+  Wart.Option2Iterable,
+  Wart.NonUnitStatements,
+  Wart.NoNeedForMonad,
+  Wart.Overloading,
+  Wart.Equals
+)
 coverageEnabled in Test:= true
 
 logBuffered in Test := false

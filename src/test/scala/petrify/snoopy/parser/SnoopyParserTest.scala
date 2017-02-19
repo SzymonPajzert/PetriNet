@@ -34,17 +34,24 @@ class SnoopyParserTest extends FunSuite {
   // TODO Check if results are good
   test("testPlaces") {
     val subPlaces = Set(
-      Place(843431,"NR0B2_ActiveGene",3),
-      Place(742641,"Cholate_r",10),
-      Place(1020251,"NR2B1_DegradedmRNA",3),
-      Place(676990,"SRF1",3),
-      Place(930153,"HNF4A",3),
-      Place(778571,"BAAT_mRNA",3),
-      Place(758710,"ABCG5_G8",3),
-      Place(786162,"SLCO1B3_ActiveGene",3),
-      Place(696152,"FXR_agonist",3),
-      Place(776280,"MDR3_DegradedProtein",3),
-      Place(785050,"SLCO1B1",3)
+      Place(676781,"DR4",1,3),
+      Place(779729,"ABCC2_mRNA",0,3),
+      Place(782973,"CYP8B1_DegradedmRNA",0,3),
+      Place(1020251,"NR2B1_DegradedmRNA",0,3),
+      Place(697915,"AAs",1,3),
+      Place(785050,"SLCO1B1",1,3),
+      Place(996255,"NR1H3_mRNA",0,3),
+      Place(1021300,"NR1H4_DegradedmRNA",0,3),
+      Place(676990,"SRF1",1,3),
+      Place(677210,"EGFR",0,3),
+      Place(1019942,"NR2B1_mRNA",0,3),
+      Place(677276,"SOS",1,3),
+      Place(781931,"CYP27A1_ActiveGene",0,3),
+      Place(677331,"Ca_ion_intra",1,3),
+      Place(793860,"SLC10A1_mRNA",0,3),
+      Place(770344,"UGTB4_mRNA",0,3),
+      Place(784020,"CYP7A1_DegradedmRNA",0,3),
+      Place(1019953,"NR2B1",1,3)
     )
  
     assert(subPlaces subsetOf places)

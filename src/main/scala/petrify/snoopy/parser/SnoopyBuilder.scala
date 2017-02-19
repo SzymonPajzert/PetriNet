@@ -28,7 +28,7 @@ class SnoopyBuilder(parsedPlaces: => Iterable[ParPlace],
   type Transitions = Map[Int, Transition]
   type Places = Map[Int, Place]
 
-  lazy val places = (parsedPlaces map { case ParPlace(id, name, capacity) => (id, Place(name, capacity)) }).toMap
+  lazy val places = (parsedPlaces map { case ParPlace(id, name, marking, capacity) => (id, (Place(name, capacity), marking)) }).toMap
   lazy val transitions = (parsedTransitions map { case ParTransition(id, name) => (id, Transition(name)) }).toMap
 
   def updateTransition(transitions: Transitions, edge: ParEdge):Transitions = {
@@ -42,9 +42,8 @@ class SnoopyBuilder(parsedPlaces: => Iterable[ParPlace],
       case InhibitorEdge => (source, target, DirectedInhibitorEdge)
     }
 
-    val place = places(placeId)
+    val place = places(placeId)._1
     val transition = transitions(transitionId)
-
 
     val newTransition = directedEdgeType match {
       case InputEdge => transition addInput place
@@ -60,6 +59,6 @@ class SnoopyBuilder(parsedPlaces: => Iterable[ParPlace],
 
     val newTransitions = (edges foldLeft transitions) { updateTransition(_, _) }
     // TODO Parsing states - remove this one
-    (PetriNet(places.values, newTransitions.values), State.create(places.values map (p => (p, 1)) ))
+    (PetriNet(places.values map (_._1), newTransitions.values), State.create(places.values))
   }
 }

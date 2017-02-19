@@ -8,5 +8,3 @@ trait Transition extends Serializable {
   def observeAvailableStates(state: State, places: Set[Place]): Option[PetriNet.ObservingState]
 }
 
-class TransitionBuilder 
-

@@ -2,22 +2,6 @@ package petrify.api
 
 import scala.util.Random
 
-/* TODO remove
-trait State extends PartialFunction[Place, Int] with Serializable
-
-trait Place extends Serializable {
-  def name: String
-  def max: Int
-}
-
-trait Transition extends Serializable {
-  def name: String
-  def input: Set[Place]
-  def output: Set[Place]
-} 
- */
-
-
 object PetriNet {
   type CollectionObservingState = Map[State, (Place => Boolean)]
   type ObservingState = (State, (Place => Boolean))

@@ -26,7 +26,8 @@ final case class Transition (
   inhibitor: Set[Place]
 ) extends api.Transition {
 
-  def places = input ++ output
+  // TODO Check in tests
+  def places: Set[Place] = input ++ output ++ read ++ inhibitor
 
   def availableStates(state: State) : Option[State] = {
     if((state isActive read) && (state isAbsent inhibitor)) {
@@ -35,7 +36,9 @@ final case class Transition (
         if decreasedState isFree output
         result <- decreasedState incrementPlaces output
       } yield result
-    } else None
+    } else {
+      None
+    }
   }
 
   def observeAvailableStates(state: State, places: Set[Place]): Option[api.PetriNet.ObservingState] = {
